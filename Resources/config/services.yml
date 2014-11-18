@@ -1,0 +1,43 @@
+parameters:
+    bluetea_crowd_authentication.crowd.user_mapper.class: Bluetea\CrowdAuthenticationBundle\Crowd\UserMapper
+    bluetea_crowd_authentication.crowd.user_resource.class: Bluetea\CrowdAuthenticationBundle\Crowd\UserResource
+    bluetea_crowd_authentication.guzzle.class: Guzzle\Http\Client
+    bluetea_crowd_authentication.guzzle.curl_auth_plugin.class: Guzzle\Plugin\CurlAuth\CurlAuthPlugin
+    bluetea_crowd_authentication.security.authentication.crowd_provider.class: Bluetea\CrowdAuthenticationBundle\Security\Authentication\Provider\CrowdProvider
+    bluetea_crowd_authentication.security.user.crowd_user_provider.class: Bluetea\CrowdAuthenticationBundle\Security\User\CrowdUserProvider
+
+services:
+    bluetea_crowd_authentication.crowd.user_mapper:
+        class: %bluetea_crowd_authentication.crowd.user_mapper.class%
+
+    bluetea_crowd_authentication.crowd.user_resource:
+        class: %bluetea_crowd_authentication.crowd.user_resource.class%
+        arguments:
+            - @bluetea_crowd_authentication.guzzle
+            - @bluetea_crowd_authentication.crowd.user_mapper
+
+    bluetea_crowd_authentication.guzzle.curl_auth_plugin:
+        class: %bluetea_crowd_authentication.guzzle.curl_auth_plugin.class%
+        arguments:
+            - %bluetea_crowd_authentication.username%
+            - %bluetea_crowd_authentication.password%
+
+    bluetea_crowd_authentication.guzzle:
+        class: %bluetea_crowd_authentication.guzzle.class%
+        arguments:
+            - %bluetea_crowd_authentication.base_url%
+        calls:
+            - [ 'addSubscriber', [ @bluetea_crowd_authentication.guzzle.curl_auth_plugin ]]
+            - [ 'setDefaultHeaders', [ { 'Content-Type': 'application/json', 'Accept': 'application/json' } ]]
+
+    bluetea_crowd_authentication.security.user.crowd_user_provider:
+        class: %bluetea_crowd_authentication.security.user.crowd_user_provider.class%
+        arguments:
+            - @bluetea_crowd_authentication.authenticator
+            - @session
+
+    bluetea_crowd_authentication.security.authentication.crowd_provider:
+        class: %bluetea_crowd_authentication.security.authentication.crowd_provider.class%
+        arguments:
+            - ''
+            - @bluetea_crowd_authentication.authenticator

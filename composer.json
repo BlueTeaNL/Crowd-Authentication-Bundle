@@ -1,0 +1,25 @@
+{
+    "name": "bluetea/crowd-authentication-bundle",
+    "description": "Atlassian Crowd authentication Symfony2 bundle",
+    "keywords": ["atlassian","crowd","authentication","symfony2"],
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Pim Widdershoven",
+            "email": "p.widdershoven@bluetea.nl",
+            "homepage": "http://www.bluetea.nl",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "guzzle": "*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Bluetea\\CrowdAuthenticationBundle": ""
+        }
+    },
+    "target-dir": "Bluetea/CrowdAuthenticationBundle"
+}
