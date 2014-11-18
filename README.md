@@ -38,6 +38,12 @@ security:
         Bluetea\CrowdAuthenticationBundle\Crowd\User: plaintext
 
     [...]
+    
+    providers:
+        crowd:
+            id: bluetea_crowd_authentication.security.user.crowd_user_provider
+    
+    [...]
 
     firewalls:
         dev:
