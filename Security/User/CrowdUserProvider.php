@@ -15,12 +15,12 @@ class CrowdUserProvider implements UserProviderInterface
     /**
      * @var Authenticator
      */
-    private $authenticator;
+    protected $authenticator;
 
     /**
      * @var Session
      */
-    private $session;
+    protected $session;
 
     public function __construct(Authenticator $authenticator, Session $session)
     {
@@ -41,20 +41,16 @@ class CrowdUserProvider implements UserProviderInterface
     public function loadUserByUsername($username)
     {
         $sessionKey = 'bluetea_crowd_authentication.user';
-
+        // Check if the user isn't available yet
         if ($this->session->has($sessionKey)) {
             return $this->session->get($sessionKey);
         }
-
-        try {
-            $user = User::fromUser($this->authenticator->getUserByUsername($username));
-
-            $this->session->set($sessionKey, $user);
-
-            return $user;
-        } catch (UserNotFoundException $e) {
-            throw new UsernameNotFoundException($e->getMessage(), $e->getCode(), $e);
-        }
+        // Find the user
+        $user = $this->findUser($username);
+        // Set the session
+        $this->session->set($sessionKey, $user);
+        // Return the user
+        return $user;
     }
 
     /**
@@ -81,5 +77,22 @@ class CrowdUserProvider implements UserProviderInterface
     public function supportsClass($class)
     {
         return $class == 'Bluetea\CrowdAuthenticationBundle\Security\User\User';
+    }
+
+    /**
+     * Find user by username
+     *
+     * @param $username
+     * @return User
+     * @throws \Symfony\Component\Security\Core\Exception\UsernameNotFoundException
+     */
+    protected function findUser($username)
+    {
+        try {
+            $user = User::fromUser($this->authenticator->getUserByUsername($username));
+        } catch (UserNotFoundException $e) {
+            throw new UsernameNotFoundException($e->getMessage(), $e->getCode(), $e);
+        }
+        return $user;
     }
 }
